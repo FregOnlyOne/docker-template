@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  web:
+    # Использование последнего стабильного образа nginx
+    image: nginx:latest
+    # Маршрутизация портов
+    ports:
+      - "80:80"
+      - "443:443"
+    # Монтируются директории, слева директории на основной машине, справа - куда они монтируются в контейнере
+    volumes:
+      - ./www:/var/www
+      - ./_docker/nginx/conf.d/:/etc/nginx/conf.d
+      - ./logs:/var/log/nginx
+    # Устанавливается зависимость контейнера web от контейнера app
+    depends_on:
+      - app
+    container_name: nginx
+
+  app:
+    # Сборка собственного образа php
+    build:
+      context: .
+      dockerfile:  ./_docker/app/Dockerfile
+    # монтируем директорию с проектами
+    volumes:
+      - ./www:/var/www
+    # Устанавливается зависимость контейнера app от контейнера db
+    depends_on:
+      - db
+    container_name: php
+
+  db:
+    # Используется стабильный образ 8 версии
+    image: mysql:8
+    ports:
+      - "3307:3306"
+    volumes:
+      - ./tmp/db:/var/lib/mysql
+    # Задаётся название базы данных и пароль для пользователя root
+    environment:
+      MYSQL_DATABASE: project-name
+      MYSQL_ROOT_PASSWORD: root
+    # В случае возникования ошибки контейнер автоматически перезагрузится
+    restart: always
+    command: mysqld --character-set-server=utf8 --collation-server=utf8_unicode_ci
+    container_name: mysql
