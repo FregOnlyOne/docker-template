@@ -50,10 +50,6 @@ Docker:
         
     > tmp
         > db
-    
-    > nginx
-        > conf.d
-            - project-name.conf
             
     > www
         > project-name
