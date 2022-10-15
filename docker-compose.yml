@@ -23,7 +23,7 @@ services:
     build:
       context: .
       dockerfile:  ./_docker/app/Dockerfile
-    # монтируем директорию с проектами
+    # Монтируется директория с проектами
     volumes:
       - ./www:/var/www
     # Устанавливается зависимость контейнера app от контейнера db

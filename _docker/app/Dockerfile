@@ -2,16 +2,24 @@
 FROM php:8.1.2-fpm
 
 RUN apt-get update && apt-get install -y \
-    curl \
     wget \
     git \
     libfreetype6-dev \
     libjpeg62-turbo-dev \
-    libmcrypt-dev
+    libmcrypt-dev \
+    apt-utils \
+    libpq-dev \
+    libpng-dev \
+    libzip-dev \
+    zip unzip && \
+    docker-php-ext-install pdo pdo_mysql && \
+    docker-php-ext-install bcmath && \
+    docker-php-ext-install gd && \
+    docker-php-ext-install zip && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-RUN docker-php-ext-install pdo pdo_mysql
-
-COPY ./_docker/app/php.ini /usr/local/etc/php/conf.d/php.ini
+ADD ./_docker/app/php.ini etc/php/php.ini
 
 # Указывается рабочая директория для PHP
 WORKDIR /var/www
